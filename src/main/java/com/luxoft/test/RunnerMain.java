@@ -29,8 +29,11 @@ public class RunnerMain {
         for (String[] row : allInstrumentsList) {
             calculationEngine(row);
         }
+        System.out.println("Instrument1Mean Value--> " + Instrument1Mean);
+        System.out.println("Instrument2Mean Value--> " + Instrument2Mean);
+        System.out.println("Instrument3Mean Value--> " + Instrument3Mean);
 
-        //Save to database
+        //Save to h2 database
         SessionFactory sessionFactory = new Configuration()
                 .configure()
                 .buildSessionFactory();
@@ -45,39 +48,25 @@ public class RunnerMain {
     private static void calculationEngine(String[] row) {
         for (String data : row) {
             if (data.equals("INSTRUMENT1")) {
-                //System.out.println("price --> " + row[0] + "~" + row[1] + "~" + row[2]);
                 instrument1TotalValue += Double.parseDouble(row[2]);
                 instrument1TotalCount = instrument1TotalCount + 1;
-                //System.out.println(instrument1TotalValue);
-                //System.out.println("instrument1TotalCount --> " + instrument1TotalCount);
                 break;
             } else if (data.equals("INSTRUMENT2")) {
-                //System.out.println("price --> " + row[0] + "~" + row[1] + "~" + row[2]);
-                //System.out.println("INSTRUMENT2--> " + row[1]);
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy", Locale.ENGLISH);
                 LocalDate date = LocalDate.parse(row[1], formatter);
-                //System.out.println(date.getYear() + date.getMonth().toString());
                 if (date.getYear() == 2014 && date.getMonth().toString() == "NOVEMBER") {
                     instrument2NovemberValue += Double.parseDouble(row[2]);
                     instrument2NovemberCount = instrument2NovemberCount + 1;
-                    //System.out.println(instrument2NovemberValue);
-                    //System.out.println("instrument2NovemberCount --> " + instrument2NovemberCount);
                 }
                 break;
             }
             //Assuming average price of Jan2011 till Dec2013
             else if (data.equals("INSTRUMENT3")) {
-                //System.out.println("price --> " + row[0] + "~" + row[1] + "~" + row[2]);
-                //System.out.println("INSTRUMENT3--> " + row[1]);
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MMM-yyyy", Locale.ENGLISH);
                 LocalDate date = LocalDate.parse(row[1], formatter);
-                //System.out.println(date.getYear() + date.getMonth().toString());
                 if (date.getYear() > 2010 && date.getYear() < 2014) {
-                    //System.out.println("IN DATA!!!!!!!!!!!!!!!!!");
                     instrument3RangeValue += Double.parseDouble(row[2]);
                     instrument3RangeCount = instrument3RangeCount + 1;
-                    //System.out.println(instrument3RangeValue);
-                    //System.out.println("instrument3RangeCount --> " + instrument3RangeCount);
                 }
                 break;
             } else {
@@ -86,17 +75,16 @@ public class RunnerMain {
             }
         }
         Instrument1Mean = instrument1TotalValue / instrument1TotalCount;
-        System.out.println("Instrument1Mean--> " + Instrument1Mean);
         Instrument2Mean = instrument2NovemberValue / instrument2NovemberCount;
-        System.out.println("Instrument2Mean--> " + Instrument2Mean);
         Instrument3Mean = instrument3RangeValue / instrument3RangeCount;
-        System.out.println("Instrument3Mean--> " + Instrument3Mean);
     }
 
     public static void load(SessionFactory sessionFactory) {
         System.out.println("-- loading instruments --");
         Session session = sessionFactory.openSession();
-        List<InstrumentPriceModifier> instruments = session.createQuery("FROM InstrumentPriceModifier").list();
+        List<InstrumentPriceModifier> instruments = session
+                .createQuery("FROM InstrumentPriceModifier where NAME!=null")
+                .list();
         instruments.forEach((x) -> System.out.printf("- %s%n", x));
         session.close();
     }
