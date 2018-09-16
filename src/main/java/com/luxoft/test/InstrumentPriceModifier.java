@@ -7,6 +7,10 @@ import javax.persistence.Id;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
+/**
+ *
+ * @author lalit verma
+ */
 @Entity
 @Table(name = "INSTRUMENT_PRICE_MODIFIER")
 public class InstrumentPriceModifier {
@@ -22,12 +26,26 @@ public class InstrumentPriceModifier {
     @Column(name = "MULTIPLIER")
     private int multiplier;
 
-    public InstrumentPriceModifier() {
-    }
-
+    /**
+     * Initializes an instance of <code>InstrumentPriceModifier</code> with the default data.
+     *
+     * @param name
+     * @param multiplier
+     */
     public InstrumentPriceModifier(String name, int multiplier) {
+        super();
+        id = id;
         this.name = name;
         this.multiplier = multiplier;
+    }
+
+    /**
+     * Initializes an instance of <code>InstrumentPriceModifier</code> with the default data.
+     *
+     */
+    public InstrumentPriceModifier() {
+        super();
+        // TODO Auto-generated constructor stub
     }
 
     /**
